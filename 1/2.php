@@ -8,7 +8,6 @@ class Db
 {
     protected $tableName;
     protected $wheres = [];
-    protected $andWheres = [];
 
     public function table($tableName)
     {
@@ -32,7 +31,7 @@ class Db
 
     public function andWhere($field, $value)
     {
-        $this->andWheres[] = [
+        $this->wheres[] = [
             'field' => $field,
             'value' => $value
         ];
@@ -51,16 +50,8 @@ class Db
                 if ($value != end($this->wheres)) $sql .= " AND ";
             }
         }
-        if (!empty($this->andWheres)) {
-            $sql .= " AND ";
-            foreach ($this->andWheres as $value) {
-                $sql .= $value['field'] . " = " . $value['value'];
-                if ($value != end($this->andWheres)) $sql .= " AND ";
-            }
-        }
 
         $this->wheres = array();
-        $this->andWheres = array();
 
         return $sql . "<br>";
     }
