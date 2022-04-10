@@ -1,6 +1,6 @@
 <?php
 
-//namespace app\engine;
+namespace app\engine;
 
 class Db
 {
@@ -13,6 +13,4 @@ class Db
     {
         return $sql . "<br>";
     }
-
-
 }
