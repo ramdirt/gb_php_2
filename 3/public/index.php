@@ -5,14 +5,15 @@ use app\models\{Product, User};
 use app\engine\Db;
 
 //TODO добавьте абсолютные пути
-include "../engine/Autoload.php";
-include "../config/config.php";
+include dirname(__DIR__) .  "/engine/Autoload.php";
+include dirname(__DIR__) . "/config/config.php";
 
 spl_autoload_register([new Autoload(), 'loadClass']);
 
 
-$product = new Product("Пицца", "Описание", 125);
+$product = new Product(1, 'name', 125, 'description');
 $product->insert();
+$product->delete();
 
 $user = new User("User", 125);
 $user->insert();
