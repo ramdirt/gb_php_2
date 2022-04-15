@@ -8,10 +8,10 @@ class Db
 {
     private $config = [
         'driver' => 'mysql',
-        'host' => 'localhost:3306',
+        'host' => 'localhost',
         'login' => 'root',
         'password' => '',
-        'database' => 'shop_db',
+        'database' => 'shop_db_2',
         'charset' => 'utf8',
     ];
 
@@ -28,6 +28,7 @@ class Db
                 $this->config['password']
             );
             $this->connection->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+            // $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
         return $this->connection;
     }
@@ -35,6 +36,7 @@ class Db
     public function lastInsertId()
     {
         //TODO вернуть id
+        return (int) $this->getConnection()->lastInsertId();
     }
 
     private function prepareDsnString()
@@ -53,6 +55,7 @@ class Db
     {
         $STH = $this->getConnection()->prepare($sql);
         $STH->execute($params);
+        // $STH->debugDumpParams();
         return $STH;
     }
 
@@ -77,5 +80,29 @@ class Db
     public function execute($sql, $params = [])
     {
         return $this->query($sql, $params)->rowCount();
+    }
+
+    public function insertSQL($params)
+    {
+        $set = '';
+        $values = '';
+
+        $count = count($params) - 1;
+
+        foreach ($params as $key => $value) {
+            $set .= "`" . str_replace("`", "``", $key) . "`";
+            $values .= ":{$key}";
+            if (array_search($key, array_keys($params)) != $count) {
+                $set .= ' , ';
+                $values .= ' , ';
+            }
+        }
+
+        return "({$set}) VALUES ({$values});";
+    }
+    public function updateSQL($params)
+    {
+
+        return "";
     }
 }
