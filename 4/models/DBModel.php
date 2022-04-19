@@ -15,7 +15,7 @@ abstract class DBModel extends Model
         $columns = [];
 
         foreach ($this as $key => $value) {
-            if ($key == 'id') continue;
+            if ($key == 'id' or $key == 'props') continue;
             $params[":" . $key] = $value;
             $columns[] = $key;
         }
@@ -27,7 +27,11 @@ abstract class DBModel extends Model
         $tableName = static::getTableName();
 
         $sql = "INSERT INTO `{$tableName}`($columns) VALUES ($values)";
+        echo $sql;
+        echo '<br>';
+        var_dump($params);
 
+        echo '<br>';
 
         Db::getInstance()->execute($sql, $params);
         $this->id = Db::getInstance()->lastInsertId();
@@ -37,12 +41,39 @@ abstract class DBModel extends Model
     public function update()
     {
         //TODO сделать update в идеале оптимальный, формировать set только по изменившимся полям
+
+        $request = '';
+
+        foreach ($this as $key => $value) {
+            if ($key == 'id' or $key == 'props') continue;
+            if ($this->props[$key]) {
+                if (is_numeric($value)) {
+                    $request .= $key . ' = ' . $value;
+                } else {
+                    $request .= $key . ' = ' . '\'' . $value . '\'';
+                }
+                $request .= ' , ';
+            }
+        }
+        $request = mb_substr($request, 0, -2);
+
+        $tableName = static::getTableName();
+        $sql = "UPDATE `{$tableName}` SET "  . $request . ' WHERE id = :id';
+        Db::getInstance()->execute($sql, ['id' => $this->id]);
+        return $this;
     }
 
     public function save()
     {
         //TODO реализовать умный save
         //if (???) $this->insert(); else $this->update();
+        if ($this->id) {
+            $this->update();
+        } else {
+            $this->insert();
+        }
+
+        return $this;
     }
 
     public function delete()
@@ -69,7 +100,8 @@ abstract class DBModel extends Model
         return Db::getInstance()->queryAll($sql);
     }
 
-    public static function getLimit($limit) {
+    public static function getLimit($limit)
+    {
         $tableName = static::getTableName();
         $sql = "SELECT * FROM {$tableName} LIMIT 0, ?";
         return Db::getInstance()->queryLimit($sql, $limit);

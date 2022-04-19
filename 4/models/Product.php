@@ -1,26 +1,34 @@
 <?php
+
 namespace app\models;
 
 
 class Product extends DBModel
 {
     protected $id;
-    protected $name;
-    protected $description;
+    protected $title;
+    protected $category_id;
+    protected $img;
     protected $price;
+    protected $description;
+
 
     protected $props = [
-        'name' => false,
-        'description' => false,
-        'price' => false
+        'title' => false,
+        'category_id' => false,
+        'img' => false,
+        'price' => false,
+        'description' => false
     ];
 
 
-    public function __construct($name = null, $description = null, $price = null)
+    public function __construct($title = null, $category_id = null, $img = null, $price = null, $description = null)
     {
-        $this->name = $name;
-        $this->description = $description;
+        $this->title = $title;
+        $this->category_id = $category_id;
+        $this->img = $img;
         $this->price = $price;
+        $this->description = $description;
     }
 
 
