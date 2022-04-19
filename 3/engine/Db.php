@@ -55,7 +55,7 @@ class Db
     {
         $STH = $this->getConnection()->prepare($sql);
         $STH->execute($params);
-        // $STH->debugDumpParams();
+        $STH->debugDumpParams();
         return $STH;
     }
 

@@ -4,66 +4,15 @@ namespace app\controllers;
 
 use app\models\Product;
 
-class ProductController
+class ProductController extends Controller
 {
-    private $action;
-    private $defaultAction = 'index';
-
-    public function runAction($action)
+    public function index()
     {
-        $this->action = $action ?: $this->defaultAction;
-        $method = 'action' . ucfirst($this->action);
-        if (method_exists($this, $method)) {
-            $this->$method();
-        } else {
-            die('404 нет такого экшена');
-        }
-    }
-
-    private function actionIndex()
-    {
-        echo $this->render('index');
-    }
-
-    private function actionCatalog()
-    {
-        $page = $_GET['page'] ?? 0;
-
-        $catalog = Product::getAll();
-       // $catalog = Product::getLimit(($page + 1) * 2);
-        echo $this->render('product/catalog',[
-            'catalog' => $catalog,
-            'page' => ++$page
-        ]);
-    }
-
-    private function actionCard()
-    {
-        $id = $_GET['id'];
+        $id = (int) $_GET['id'];
         $product = Product::getOne($id);
 
-        echo $this->render('product/card', [
+        echo $this->render('product/index', [
             'product' => $product
         ]);
     }
-
-    public function render($template, $params = [])
-    {
-        return $this->renderTemplate('layouts/main', [
-            'menu' => $this->renderTemplate('menu', $params),
-            'content' => $this->renderTemplate($template, $params)
-        ]);
-
-    }
-
-
-    public function renderTemplate($template, $params = [])
-    {
-        ob_start();
-        extract($params);
-        include VIEWS_DIR . $template . '.php';
-        return ob_get_clean();
-    }
-
-
 }
